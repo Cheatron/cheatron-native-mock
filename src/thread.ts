@@ -7,7 +7,7 @@ import {
   CONTEXT_SIZE,
   type ThreadContext,
 } from './constants';
-import koffi from 'koffi';
+import { ffi } from 'win32-def';
 
 import { log } from './logger';
 
@@ -102,14 +102,14 @@ export class Thread {
       throw new Error('GetThreadContext failed');
     }
 
-    return koffi.decode(buf, CONTEXT) as ThreadContext;
+    return ffi.decode(buf, CONTEXT) as ThreadContext;
   }
 
   setContext(ctx: ThreadContext): void {
     if (!this.isValid()) throw new Error('Thread handle is closed');
 
     const buf = Buffer.alloc(CONTEXT_SIZE);
-    koffi.encode(buf, CONTEXT, ctx);
+    ffi.encode(buf, CONTEXT, ctx);
 
     const success = Kernel32.SetThreadContext(this._handle!, buf);
     if (!success) {

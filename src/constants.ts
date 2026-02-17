@@ -94,26 +94,23 @@ export interface MemoryBasicInformation {
   Type: number;
 }
 
-import koffi from 'koffi';
+import { ffi } from 'win32-def';
 
 // Koffi struct for MEMORY_BASIC_INFORMATION (64-bit)
-export const MEMORY_BASIC_INFORMATION = koffi.struct(
-  'MEMORY_BASIC_INFORMATION',
-  {
-    BaseAddress: 'uint64',
-    AllocationBase: 'uint64',
-    AllocationProtect: 'uint32',
-    __PartitionId: 'uint16',
-    __pad: 'uint16',
-    RegionSize: 'uint64',
-    State: 'uint32',
-    Protect: 'uint32',
-    Type: 'uint32',
-    __pad2: 'uint32',
-  },
-);
+export const MEMORY_BASIC_INFORMATION = ffi.struct('MEMORY_BASIC_INFORMATION', {
+  BaseAddress: 'uint64',
+  AllocationBase: 'uint64',
+  AllocationProtect: 'uint32',
+  __PartitionId: 'uint16',
+  __pad: 'uint16',
+  RegionSize: 'uint64',
+  State: 'uint32',
+  Protect: 'uint32',
+  Type: 'uint32',
+  __pad2: 'uint32',
+});
 
-export const MBI_SIZE = koffi.sizeof(MEMORY_BASIC_INFORMATION);
+export const MBI_SIZE = ffi.sizeof(MEMORY_BASIC_INFORMATION);
 
 /**
  * CONTEXT flags for x64
@@ -135,7 +132,7 @@ export const ContextFlags = {
  * M128A structure (128-bit register value)
  * https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-m128a
  */
-export const M128A = koffi.struct('M128A', {
+export const M128A = ffi.struct('M128A', {
   Low: 'uint64',
   High: 'int64',
 });
@@ -149,7 +146,7 @@ export interface M128AValue {
  * CONTEXT structure for x64 (AMD64)
  * https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context
  */
-export const CONTEXT = koffi.struct('CONTEXT', {
+export const CONTEXT = ffi.struct('CONTEXT', {
   // Register parameter home addresses
   P1Home: 'uint64',
   P2Home: 'uint64',
@@ -217,7 +214,7 @@ export const CONTEXT = koffi.struct('CONTEXT', {
   LastExceptionFromRip: 'uint64',
 });
 
-export const CONTEXT_SIZE = koffi.sizeof(CONTEXT);
+export const CONTEXT_SIZE = ffi.sizeof(CONTEXT);
 
 /**
  * Parsed thread context (x64)

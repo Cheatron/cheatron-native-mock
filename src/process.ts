@@ -6,7 +6,7 @@ import {
   MBI_SIZE,
   type MemoryBasicInformation,
 } from './constants';
-import koffi from 'koffi';
+import { ffi } from 'win32-def';
 
 import { log } from './logger';
 
@@ -136,7 +136,7 @@ export class Process {
       throw new Error('VirtualQueryEx failed');
     }
 
-    const info = koffi.decode(buffer, MEMORY_BASIC_INFORMATION);
+    const info = ffi.decode(buffer, MEMORY_BASIC_INFORMATION);
     return info as MemoryBasicInformation;
   }
 }
@@ -159,7 +159,7 @@ export class CurrentProcess extends Process {
     const result = Kernel32.VirtualQuery(address, buffer, MBI_SIZE);
     if (!result) throw new Error('VirtualQuery failed');
 
-    const info = koffi.decode(buffer, MEMORY_BASIC_INFORMATION);
+    const info = ffi.decode(buffer, MEMORY_BASIC_INFORMATION);
     return info as MemoryBasicInformation;
   }
 }

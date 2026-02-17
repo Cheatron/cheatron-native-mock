@@ -1,3 +1,3 @@
-import { createLogHelper } from '@cheatron/cheatron-log';
+import { createLogHelper } from '@cheatron/log';
 
 export const log = createLogHelper('NativeMock');

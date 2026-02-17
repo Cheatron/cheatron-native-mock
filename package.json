@@ -1,6 +1,7 @@
 {
-  "name": "@cheatron/cheatron-native-mock",
+  "name": "@cheatron/native-mock",
   "version": "1.0.0",
+  "description": "Pure JavaScript mock implementation of Win32 native modules for testing without native dependencies",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -9,9 +10,27 @@
     "LICENSE"
   ],
   "license": "MIT",
+  "keywords": [
+    "cheatron",
+    "win32",
+    "native",
+    "mock",
+    "kernel32",
+    "simulation",
+    "testing"
+  ],
+  "author": "Cheatron",
+  "homepage": "https://github.com/Cheatron/cheatron-native-mock#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cheatron/cheatron-native-mock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cheatron/cheatron-native-mock/issues"
+  },
   "dependencies": {
-    "@cheatron/cheatron-log": "^1.0.4",
-    "@cheatron/cheatron-native-mock-koffi": "^1.0.0",
+    "@cheatron/log": "^1.0.1",
+    "@cheatron/native-mock-koffi": "^1.0.0",
     "win32-def": "^26.1.2"
   },
   "devDependencies": {
@@ -26,7 +45,7 @@
     "typescript-eslint": "^8.56.0"
   },
   "overrides": {
-    "koffi": "npm:@cheatron/cheatron-native-mock-koffi@^1.0.0"
+    "koffi": "npm:@cheatron/native-mock-koffi@^1.0.0"
   },
   "scripts": {
     "build": "tsc",

@@ -3,10 +3,10 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@cheatron/cheatron-native-mock",
+      "name": "@cheatron/native-mock",
       "dependencies": {
-        "@cheatron/cheatron-log": "1.0.4",
-        "@cheatron/cheatron-native-mock-koffi": "^1.0.0",
+        "@cheatron/log": "^1.0.1",
+        "@cheatron/native-mock-koffi": "^1.0.0",
         "win32-def": "^26.1.2",
       },
       "devDependencies": {
@@ -23,12 +23,12 @@
     },
   },
   "overrides": {
-    "koffi": "npm:@cheatron/cheatron-native-mock-koffi@^1.0.0",
+    "koffi": "npm:@cheatron/native-mock-koffi@^1.0.0",
   },
   "packages": {
-    "@cheatron/cheatron-log": ["@cheatron/cheatron-log@1.0.4", "", { "dependencies": { "winston": "3.19.0", "winston-daily-rotate-file": "^5.0.0" } }, "sha512-379Wh0yuGcOy1oKuTBKG1UtkXp4sX0w12Rej9Mg/uum5qmUxLNBX1k0kimYGSkJEjAJz+F5ajoBLhg81PSdwdA=="],
+    "@cheatron/log": ["@cheatron/log@1.0.1", "", { "dependencies": { "winston": "3.19.0", "winston-daily-rotate-file": "^5.0.0" } }, "sha512-vhOpXGhWXv5c3IgUjOaGy2jcqJU95ZIroRrIgiz7/e4/u8ce/0uj8ttxUkrXRqwpkKWk/zcNg0dbpKrv3/4xww=="],
 
-    "@cheatron/cheatron-native-mock-koffi": ["@cheatron/cheatron-native-mock-koffi@1.0.0", "", {}, "sha512-3KXw1gGg2wKyeKDkweKlwgvQydYkS+nBPePsJKNXEhHli/m7DQOQscIzlGalalA7pYGErDGe5QzmtMj8ptePEQ=="],
+    "@cheatron/native-mock-koffi": ["@cheatron/native-mock-koffi@1.0.0", "", {}, "sha512-i37C6MIf/eLGFJQhBZV2c0VLIgB8ilfkK4pH2qvtHaKmJY1XcsYB4BjIp+Z500TZGYOooUqtP8592iiKk35uiA=="],
 
     "@colors/colors": ["@colors/colors@1.6.0", "", {}, "sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA=="],
 
@@ -198,7 +198,7 @@
 
     "keyv": ["keyv@4.5.4", "", { "dependencies": { "json-buffer": "3.0.1" } }, "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw=="],
 
-    "koffi": ["@cheatron/cheatron-native-mock-koffi@1.0.0", "", {}, "sha512-3KXw1gGg2wKyeKDkweKlwgvQydYkS+nBPePsJKNXEhHli/m7DQOQscIzlGalalA7pYGErDGe5QzmtMj8ptePEQ=="],
+    "koffi": ["@cheatron/native-mock-koffi@1.0.0", "", {}, "sha512-i37C6MIf/eLGFJQhBZV2c0VLIgB8ilfkK4pH2qvtHaKmJY1XcsYB4BjIp+Z500TZGYOooUqtP8592iiKk35uiA=="],
 
     "kuler": ["kuler@2.0.0", "", {}, "sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A=="],
 

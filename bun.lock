@@ -5,7 +5,7 @@
     "": {
       "name": "@cheatron/cheatron-native-mock",
       "dependencies": {
-        "@cheatron/cheatron-log": "^1.0.2",
+        "@cheatron/cheatron-log": "1.0.4",
         "@cheatron/cheatron-native-mock-koffi": "^1.0.0",
         "win32-def": "^26.1.2",
       },
@@ -17,10 +17,8 @@
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.3.0",
         "prettier": "^3.8.1",
+        "typescript": "^5",
         "typescript-eslint": "^8.56.0",
-      },
-      "peerDependencies": {
-        "typescript": "^5.9.3",
       },
     },
   },
@@ -28,7 +26,7 @@
     "koffi": "npm:@cheatron/cheatron-native-mock-koffi@^1.0.0",
   },
   "packages": {
-    "@cheatron/cheatron-log": ["@cheatron/cheatron-log@1.0.2", "", { "dependencies": { "winston": "3.19.0", "winston-daily-rotate-file": "^5.0.0" } }, "sha512-AKDXQZHy9qTbPzptsm4n2sI2v0VS2JepXaK4kOYlMYXEsivzvxuzfuSRF62TfQVgnSymMQ7TzCB+LoTzsr5Oug=="],
+    "@cheatron/cheatron-log": ["@cheatron/cheatron-log@1.0.4", "", { "dependencies": { "winston": "3.19.0", "winston-daily-rotate-file": "^5.0.0" } }, "sha512-379Wh0yuGcOy1oKuTBKG1UtkXp4sX0w12Rej9Mg/uum5qmUxLNBX1k0kimYGSkJEjAJz+F5ajoBLhg81PSdwdA=="],
 
     "@cheatron/cheatron-native-mock-koffi": ["@cheatron/cheatron-native-mock-koffi@1.0.0", "", {}, "sha512-3KXw1gGg2wKyeKDkweKlwgvQydYkS+nBPePsJKNXEhHli/m7DQOQscIzlGalalA7pYGErDGe5QzmtMj8ptePEQ=="],
 

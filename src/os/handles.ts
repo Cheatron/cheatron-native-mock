@@ -1,8 +1,12 @@
 import * as D from 'win32-def';
 
+export interface ISimulatedObject {
+  id: number;
+}
+
 export interface HandleObject {
   type: 'Process' | 'Thread' | 'File' | 'Event' | 'Unknown';
-  object: any; // The actual simulation object (Process, Thread, etc.)
+  object: ISimulatedObject; // The actual simulation object
   accessMask: number;
 }
 
@@ -11,7 +15,7 @@ export class HandleTable {
   private nextHandleValue = 4n; // Windows handles are often multiples of 4
 
   createHandle(
-    object: any,
+    object: ISimulatedObject,
     type: HandleObject['type'],
     accessMask: number,
   ): D.HANDLE {

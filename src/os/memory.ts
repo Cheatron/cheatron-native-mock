@@ -1,5 +1,4 @@
 import {
-  MBI_SIZE,
   type MemoryBasicInformation,
   MemoryProtection,
   MemoryState,
@@ -42,7 +41,7 @@ export class MemoryManager {
   allocate(
     address: number, // If 0, find free space
     size: number,
-    allocationType: number = MemoryState.COMMIT | MemoryState.RESERVE,
+    _allocationType: number = MemoryState.COMMIT | MemoryState.RESERVE,
     protect: number = MemoryProtection.READWRITE,
   ): number {
     const numPages = Math.ceil(size / PAGE_SIZE);
@@ -68,7 +67,7 @@ export class MemoryManager {
     } else {
       // Verify requested range is free
       for (let i = 0; i < numPages; i++) {
-        const addr = startAddress + i * PAGE_SIZE;
+        const _addr = startAddress + i * PAGE_SIZE;
         // Should check for collisions or if re-allocation is allowed
       }
     }
@@ -93,8 +92,8 @@ export class MemoryManager {
 
   free(
     address: number,
-    size: number = 0,
-    freeType: number = 0x8000 /* MEM_RELEASE */,
+    _size: number = 0,
+    _freeType: number = 0x8000 /* MEM_RELEASE */,
   ): boolean {
     const startAddress = this.alignDown(address);
     if (this.pages.has(startAddress)) {

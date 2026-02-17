@@ -1,5 +1,5 @@
 import { SimulatedProcess } from './process';
-import { HandleTable, HandleObject } from './handles';
+import { HandleObject } from './handles';
 import * as D from 'win32-def';
 
 export class Kernel {

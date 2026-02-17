@@ -1,5 +1,3 @@
-import * as D from 'win32-def';
-
 export enum ThreadState {
   INITIALIZED,
   READY,
@@ -82,7 +80,7 @@ export class SimulatedThread {
     return this.suspendCount;
   }
 
-  getContext(flags: number): ThreadContext {
+  getContext(_flags: number): ThreadContext {
     // Should respect flags (CONTEXT_FULL, etc.), but for mock we return full.
     return { ...this.context };
   }

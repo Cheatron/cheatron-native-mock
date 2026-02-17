@@ -1,7 +1,6 @@
 import { MemoryManager } from './memory';
 import { HandleTable } from './handles';
 import { SimulatedThread } from './thread';
-import * as D from 'win32-def';
 
 export class SimulatedProcess {
   public id: number;

@@ -1,0 +1,40 @@
+{
+  "name": "@cheatron/cheatron-native-mock",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "latest",
+    "add": "^2.0.6",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.3.0",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.56.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "bun run build",
+    "test": "bun test",
+    "lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --cache",
+    "lint:fix": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --fix",
+    "format": "prettier --write \"{src,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\"",
+    "format:check": "prettier --check \"{src,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\""
+  },
+  "dependencies": {
+    "@cheatron/cheatron-log": "^1.0.2",
+    "@cheatron/cheatron-native-mock-koffi": "^1.0.0",
+    "win32-def": "^26.1.2"
+  },
+  "overrides": {
+    "koffi": "npm:@cheatron/cheatron-native-mock-koffi@^1.0.0"
+  }
+}

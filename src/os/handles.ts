@@ -1,4 +1,4 @@
-import * as D from 'win32-def';
+import * as Def from 'win32-def';
 
 export interface ISimulatedObject {
   id: number;
@@ -18,7 +18,7 @@ export class HandleTable {
     object: ISimulatedObject,
     type: HandleObject['type'],
     accessMask: number,
-  ): D.HANDLE {
+  ): Def.HANDLE {
     const handleValue = this.nextHandleValue;
     this.nextHandleValue += 4n;
 
@@ -30,14 +30,14 @@ export class HandleTable {
       accessMask,
     });
 
-    return handleValue as unknown as D.HANDLE;
+    return handleValue as unknown as Def.HANDLE;
   }
 
-  getObject(handle: D.HANDLE): HandleObject | undefined {
+  getObject(handle: Def.HANDLE): HandleObject | undefined {
     return this.handles.get(BigInt(handle as bigint));
   }
 
-  closeHandle(handle: D.HANDLE): boolean {
+  closeHandle(handle: Def.HANDLE): boolean {
     return this.handles.delete(BigInt(handle as bigint));
   }
 }

@@ -1,6 +1,6 @@
 import { SimulatedProcess } from './process';
-import { HandleObject } from './handles';
-import * as D from 'win32-def';
+import type { HandleObject } from './handles';
+import * as Def from 'win32-def';
 
 export class Kernel {
   public static instance: Kernel;
@@ -43,12 +43,12 @@ export class Kernel {
 
   public OpenProcess(
     dwDesiredAccess: number,
-    bInheritHandle: boolean,
+    _bInheritHandle: boolean,
     dwProcessId: number,
-  ): D.HANDLE {
+  ): Def.HANDLE {
     const targetProc = this.processes.get(dwProcessId);
     if (!targetProc) {
-      return 0n as unknown as D.HANDLE; // NULL
+      return 0n as unknown as Def.HANDLE; // NULL
     }
 
     // Create a handle in the CURRENT process's handle table pointing to the TARGET process
@@ -60,12 +60,12 @@ export class Kernel {
     return handle;
   }
 
-  public CloseHandle(hObject: D.HANDLE): boolean {
+  public CloseHandle(hObject: Def.HANDLE): boolean {
     return this.currentProcess.handles.closeHandle(hObject);
   }
 
   // Helper to dereference a handle from the current process context
-  public getObjectFromHandle(handle: D.HANDLE): HandleObject | undefined {
+  public getObjectFromHandle(handle: Def.HANDLE): HandleObject | undefined {
     return this.currentProcess.handles.getObject(handle);
   }
 }

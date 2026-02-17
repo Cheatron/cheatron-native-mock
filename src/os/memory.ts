@@ -28,13 +28,6 @@ export class MemoryManager {
   }
 
   /**
-   * Aligns an address up to the nearest page boundary.
-   */
-  private alignUp(address: number): number {
-    return Math.ceil(address / PAGE_SIZE) * PAGE_SIZE;
-  }
-
-  /**
    * Allocates memory.
    * Simplification: Always allocates MEM_PRIVATE, MEM_COMMIT | MEM_RESERVE.
    */
@@ -67,7 +60,7 @@ export class MemoryManager {
     } else {
       // Verify requested range is free
       for (let i = 0; i < numPages; i++) {
-        const _addr = startAddress + i * PAGE_SIZE;
+        // const _addr = startAddress + i * PAGE_SIZE;
         // Should check for collisions or if re-allocation is allowed
       }
     }

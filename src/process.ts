@@ -1,5 +1,5 @@
 import { Kernel32Impl as Kernel32 } from './kernel32';
-import * as Types from 'win32-def/types';
+import type { HANDLE } from 'win32-def';
 import {
   ProcessAccess,
   MEMORY_BASIC_INFORMATION,
@@ -7,13 +7,12 @@ import {
   type MemoryBasicInformation,
 } from './constants';
 import { ffi } from 'win32-def';
-
 import { log } from './logger';
 
 /**
  * Handle management registry for automatic cleanup
  */
-const registry = new FinalizationRegistry((handle: Types.HANDLE) => {
+const registry = new FinalizationRegistry((handle: HANDLE) => {
   if (handle) {
     log.trace('Process', 'Closing orphaned handle via GC');
     Kernel32.CloseHandle(handle);
@@ -24,11 +23,11 @@ const registry = new FinalizationRegistry((handle: Types.HANDLE) => {
  * Represents a remote process
  */
 export class Process {
-  protected _handle: Types.HANDLE | null;
+  protected _handle: HANDLE | null;
   protected _pid: number;
 
   constructor(
-    handle: Types.HANDLE | null,
+    handle: HANDLE | null,
     autoClose: boolean = true,
     pid: number = 0,
   ) {

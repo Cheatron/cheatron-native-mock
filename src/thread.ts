@@ -1,5 +1,5 @@
 import { Kernel32Impl as Kernel32 } from './kernel32';
-import * as Types from 'win32-def/types';
+import type { HANDLE } from 'win32-def';
 import {
   ThreadAccess,
   ContextFlags,
@@ -8,13 +8,12 @@ import {
   type ThreadContext,
 } from './constants';
 import { ffi } from 'win32-def';
-
 import { log } from './logger';
 
 /**
  * Handle management registry for automatic cleanup
  */
-const registry = new FinalizationRegistry((handle: Types.HANDLE) => {
+const registry = new FinalizationRegistry((handle: HANDLE) => {
   if (handle) {
     log.trace('Thread', 'Closing orphaned handle via GC');
     Kernel32.CloseHandle(handle);
@@ -25,9 +24,9 @@ const registry = new FinalizationRegistry((handle: Types.HANDLE) => {
  * Represents a thread handle
  */
 export class Thread {
-  protected _handle: Types.HANDLE | null;
+  protected _handle: HANDLE | null;
 
-  constructor(handle: Types.HANDLE | null, autoClose: boolean = true) {
+  constructor(handle: HANDLE | null, autoClose: boolean = true) {
     this._handle = handle;
     if (autoClose && handle) {
       registry.register(this, handle, this);

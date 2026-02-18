@@ -1,13 +1,12 @@
 import { Kernel32Impl as Kernel32 } from './kernel32';
-import type { HANDLE } from 'win32-def';
 import {
   ThreadAccess,
   ContextFlags,
   CONTEXT,
   CONTEXT_SIZE,
-  type ThreadContext,
-} from './constants';
-import { ffi } from 'win32-def';
+  ffi,
+} from '@cheatron/win32-ext';
+import type { ThreadContext, HANDLE } from '@cheatron/win32-ext';
 import { log } from './logger';
 
 /**

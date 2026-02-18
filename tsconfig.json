@@ -35,6 +35,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "@cheatron/native": ["src/index.ts"],
       "@cheatron/native/*": ["src/*"]
     }
   },

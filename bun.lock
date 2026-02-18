@@ -7,7 +7,7 @@
       "dependencies": {
         "@cheatron/log": "^1.0.1",
         "@cheatron/native-mock-koffi": "^1.0.0",
-        "win32-def": "^26.1.2",
+        "@cheatron/win32-ext": "^1.0.0",
       },
       "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -29,6 +29,8 @@
     "@cheatron/log": ["@cheatron/log@1.0.1", "", { "dependencies": { "winston": "3.19.0", "winston-daily-rotate-file": "^5.0.0" } }, "sha512-vhOpXGhWXv5c3IgUjOaGy2jcqJU95ZIroRrIgiz7/e4/u8ce/0uj8ttxUkrXRqwpkKWk/zcNg0dbpKrv3/4xww=="],
 
     "@cheatron/native-mock-koffi": ["@cheatron/native-mock-koffi@1.0.0", "", {}, "sha512-i37C6MIf/eLGFJQhBZV2c0VLIgB8ilfkK4pH2qvtHaKmJY1XcsYB4BjIp+Z500TZGYOooUqtP8592iiKk35uiA=="],
+
+    "@cheatron/win32-ext": ["@cheatron/win32-ext@1.0.0", "", { "dependencies": { "win32-def": "^26.1.2" } }, "sha512-M2qla/qZugjMmyI/h3/0PlkQ7FiKhcwKTR+Egq6YLRfz36gJXPKohUQy+dRKcLEnmH1j5bx2kuZMUhCwBrQ7Qw=="],
 
     "@colors/colors": ["@colors/colors@1.6.0", "", {}, "sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA=="],
 

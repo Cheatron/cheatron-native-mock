@@ -3,7 +3,7 @@ import {
   MemoryProtection,
   MemoryState,
   MemoryType,
-} from '../constants';
+} from '@cheatron/win32-ext';
 
 const PAGE_SIZE = 4096;
 

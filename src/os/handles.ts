@@ -1,4 +1,4 @@
-import * as Def from 'win32-def';
+import * as Def from '@cheatron/win32-ext';
 
 export interface ISimulatedObject {
   id: number;

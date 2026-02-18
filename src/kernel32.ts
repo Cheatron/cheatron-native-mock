@@ -1,4 +1,4 @@
-import type * as Def from 'win32-def';
+import * as Def from '@cheatron/win32-ext';
 import { kernel } from './os/kernel';
 import { SimulatedProcess } from './os/process';
 
@@ -225,16 +225,10 @@ export const Kernel32Impl = {
     }
     return 0;
   },
-  GetThreadContext: (
-    _hThread: Def.HANDLE,
-    _lpContext: Buffer,
-  ): Def.BOOL => {
+  GetThreadContext: (_hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
     return 0;
   },
-  SetThreadContext: (
-    _hThread: Def.HANDLE,
-    _lpContext: Buffer,
-  ): Def.BOOL => {
+  SetThreadContext: (_hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
     return 1;
   },
   GetLastError: (): Def.DWORD => 0,

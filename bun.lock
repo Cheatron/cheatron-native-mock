@@ -7,7 +7,7 @@
       "dependencies": {
         "@cheatron/log": "^1.0.1",
         "@cheatron/native-mock-koffi": "^1.0.0",
-        "@cheatron/win32-ext": "^1.0.0",
+        "@cheatron/win32-ext": "^1.0.1",
       },
       "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -30,7 +30,7 @@
 
     "@cheatron/native-mock-koffi": ["@cheatron/native-mock-koffi@1.0.0", "", {}, "sha512-i37C6MIf/eLGFJQhBZV2c0VLIgB8ilfkK4pH2qvtHaKmJY1XcsYB4BjIp+Z500TZGYOooUqtP8592iiKk35uiA=="],
 
-    "@cheatron/win32-ext": ["@cheatron/win32-ext@1.0.0", "", { "dependencies": { "win32-def": "^26.1.2" } }, "sha512-M2qla/qZugjMmyI/h3/0PlkQ7FiKhcwKTR+Egq6YLRfz36gJXPKohUQy+dRKcLEnmH1j5bx2kuZMUhCwBrQ7Qw=="],
+    "@cheatron/win32-ext": ["@cheatron/win32-ext@1.0.1", "", { "dependencies": { "win32-def": "^26.1.2" } }, "sha512-iPFCGfkXKLfhywUq5ZTElJ7+LkbalY+rSmLdtfJS8MNXYaV6yH3xDddcweh0qgh/X9Q0jkVzoh6rAQ+5agQkOw=="],
 
     "@colors/colors": ["@colors/colors@1.6.0", "", {}, "sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA=="],
 

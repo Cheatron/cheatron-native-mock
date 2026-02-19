@@ -1,6 +1,6 @@
 {
   "name": "@cheatron/native-mock",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Pure JavaScript mock implementation of Win32 native modules for testing without native dependencies",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

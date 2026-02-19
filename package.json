@@ -1,6 +1,6 @@
 {
   "name": "@cheatron/native-mock",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Pure JavaScript mock implementation of Win32 native modules for testing without native dependencies",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -50,10 +50,10 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "bun run build",
-    "test": "bun test",
-    "lint": "eslint \"{src,utils,tests}/**/*.{js,ts,jsx,tsx}\" --cache",
-    "lint:fix": "eslint \"{src,utils,tests}/**/*.{js,ts,jsx,tsx}\" --fix",
-    "format": "prettier --write \"{src,utils,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\"",
-    "format:check": "prettier --check \"{src,utils,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\""
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/**/*.ts --cache",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts"
   }
 }

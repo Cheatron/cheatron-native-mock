@@ -1,6 +1,7 @@
 import * as Def from '@cheatron/win32-ext';
 import { kernel } from './os/kernel';
 import { SimulatedProcess } from './os/process';
+import { SimulatedThread } from './os/thread';
 
 // Constants
 const PSEUDO_HANDLE_PROCESS = 0xffffffffffffffffn as unknown as Def.HANDLE; // -1
@@ -17,20 +18,19 @@ export const Kernel32Impl = {
   },
   GetCurrentProcess: (): Def.HANDLE => PSEUDO_HANDLE_PROCESS,
   GetCurrentProcessId: (): Def.DWORD => kernel.currentProcess.id,
+  GetProcessId: (hProcess: Def.HANDLE): Def.DWORD =>
+    kernel.GetProcessId(hProcess),
   CloseHandle: (hObject: Def.HANDLE): Def.BOOL => {
-    if (hObject === PSEUDO_HANDLE_PROCESS || hObject === PSEUDO_HANDLE_THREAD) {
-      return 1;
-    }
     return kernel.CloseHandle(hObject) ? 1 : 0;
   },
 
   // Memory
   ReadProcessMemory: (
     hProcess: Def.HANDLE,
-    lpBaseAddress: Def.LPCVOID, // bigint | number
-    lpBuffer: Buffer, // LPVOID
-    nSize: Def.SIZE_T, // bigint | number
-    _lpNumberOfBytesRead: Def.LPDWORD | null, // ptr
+    lpBaseAddress: Def.LPCVOID,
+    lpBuffer: Buffer,
+    nSize: Def.SIZE_T,
+    _lpNumberOfBytesRead: Def.SIZE_T | null,
   ): Def.BOOL => {
     let process: SimulatedProcess | undefined;
 
@@ -45,11 +45,8 @@ export const Kernel32Impl = {
 
     if (!process) return 0;
 
-    const addr = Number(lpBaseAddress);
-    const size = Number(nSize);
-
     try {
-      const data = process.memory.read(addr, size);
+      const data = process.memory.read(Number(lpBaseAddress), Number(nSize));
       data.copy(lpBuffer);
       return 1;
     } catch (_e) {
@@ -58,10 +55,10 @@ export const Kernel32Impl = {
   },
   WriteProcessMemory: (
     hProcess: Def.HANDLE,
-    lpBaseAddress: Def.LPCVOID,
+    lpBaseAddress: Def.LPVOID,
     lpBuffer: Buffer,
     nSize: Def.SIZE_T,
-    _lpNumberOfBytesWritten: Def.LPDWORD | null,
+    _lpNumberOfBytesWritten: Def.SIZE_T | null,
   ): Def.BOOL => {
     let process: SimulatedProcess | undefined;
 
@@ -76,13 +73,10 @@ export const Kernel32Impl = {
 
     if (!process) return 0;
 
-    const addr = Number(lpBaseAddress);
-
-    // Ensure we only write nSize bytes essentially
     const dataToWrite = lpBuffer.subarray(0, Number(nSize));
 
     try {
-      if (process.memory.write(addr, dataToWrite) > 0) {
+      if (process.memory.write(Number(lpBaseAddress), dataToWrite) > 0) {
         return 1;
       }
       return 0;
@@ -91,7 +85,7 @@ export const Kernel32Impl = {
     }
   },
   VirtualAlloc: (
-    lpAddress: Def.LPCVOID,
+    lpAddress: Def.LPVOID | null,
     dwSize: Def.SIZE_T,
     flAllocationType: Def.DWORD,
     flProtect: Def.DWORD,
@@ -106,7 +100,7 @@ export const Kernel32Impl = {
   },
   VirtualAllocEx: (
     hProcess: Def.HANDLE,
-    lpAddress: Def.LPCVOID,
+    lpAddress: Def.LPVOID | null,
     dwSize: Def.SIZE_T,
     flAllocationType: Def.DWORD,
     flProtect: Def.DWORD,
@@ -124,20 +118,14 @@ export const Kernel32Impl = {
 
     if (!process) return 0n as unknown as Def.LPVOID;
 
-    const addr = Number(lpAddress);
-    const size = Number(dwSize);
-
-    // We assume flAllocationType and flProtect match our internal constants or we pass them through
-    // Our MemoryManager uses constants from constants.ts which match Win32
-
     try {
-      const allocatedAddr = process.memory.allocate(
-        addr,
-        size,
+      const addr = process.memory.allocate(
+        Number(lpAddress || 0),
+        Number(dwSize),
         flAllocationType,
         flProtect,
       );
-      return BigInt(allocatedAddr) as unknown as Def.LPVOID;
+      return BigInt(addr) as unknown as Def.LPVOID;
     } catch (_e) {
       return 0n as unknown as Def.LPVOID;
     }
@@ -145,10 +133,9 @@ export const Kernel32Impl = {
 
   VirtualQuery: (
     lpAddress: Def.LPCVOID,
-    lpBuffer: Buffer, // PMEMORY_BASIC_INFORMATION
+    lpBuffer: Buffer,
     dwLength: Def.SIZE_T,
   ): Def.SIZE_T => {
-    // Queries CURRENT process
     return Kernel32Impl.VirtualQueryEx(
       PSEUDO_HANDLE_PROCESS,
       lpAddress,
@@ -175,23 +162,15 @@ export const Kernel32Impl = {
 
     if (!process) return 0n as unknown as Def.SIZE_T;
 
-    const addr = Number(lpAddress);
-    const info = process.memory.query(addr);
+    const info = process.memory.query(Number(lpAddress));
 
-    // Serialize info to lpBuffer
-    // BaseAddress (0)
+    // Serialize info to lpBuffer (PMEMORY_BASIC_INFORMATION)
     lpBuffer.writeBigUInt64LE(BigInt(info.BaseAddress), 0);
-    // AllocationBase (8)
     lpBuffer.writeBigUInt64LE(BigInt(info.AllocationBase), 8);
-    // AllocationProtect (16)
     lpBuffer.writeUInt32LE(info.AllocationProtect, 16);
-    // RegionSize (24)
     lpBuffer.writeBigUInt64LE(BigInt(info.RegionSize), 24);
-    // State (32)
     lpBuffer.writeUInt32LE(info.State, 32);
-    // Protect (36)
     lpBuffer.writeUInt32LE(info.Protect, 36);
-    // Type (40)
     lpBuffer.writeUInt32LE(info.Type, 40);
 
     return BigInt(dwLength) as unknown as Def.SIZE_T;
@@ -199,37 +178,160 @@ export const Kernel32Impl = {
 
   // Thread
   OpenThread: (
-    _dwDesiredAccess: Def.DWORD,
-    _bInheritHandle: Def.BOOL,
-    _dwThreadId: Def.DWORD,
+    dwDesiredAccess: Def.DWORD,
+    bInheritHandle: Def.BOOL,
+    dwThreadId: Def.DWORD,
   ): Def.HANDLE => {
-    return 0x200n as unknown as Def.HANDLE;
+    return kernel.OpenThread(dwDesiredAccess, !!bInheritHandle, dwThreadId);
   },
   GetCurrentThread: (): Def.HANDLE => PSEUDO_HANDLE_THREAD,
-  GetCurrentThreadId: (): Def.DWORD => 98765,
+  GetCurrentThreadId: (): Def.DWORD => kernel.GetThreadId(PSEUDO_HANDLE_THREAD),
+  GetThreadId: (hThread: Def.HANDLE): Def.DWORD => kernel.GetThreadId(hThread),
   SuspendThread: (hThread: Def.HANDLE): Def.DWORD => {
-    if (hThread === PSEUDO_HANDLE_THREAD) return 0;
+    if (hThread === PSEUDO_HANDLE_THREAD) {
+      // Find current thread of current process
+      const tid = kernel.GetThreadId(hThread);
+      const thread = kernel.currentProcess.getThread(tid);
+      return thread ? thread.suspend() : 0;
+    }
     const handleObj = kernel.getObjectFromHandle(hThread);
     if (handleObj && handleObj.type === 'Thread') {
-      // return (handleObj.object as SimulatedThread).suspend();
-      return 0; // SimulatedThread import might be cyclic or tricky, simplified for now
+      return (handleObj.object as SimulatedThread).suspend();
     }
-    return 0; // Fail
+    return 0;
   },
   ResumeThread: (hThread: Def.HANDLE): Def.DWORD => {
-    if (hThread === PSEUDO_HANDLE_THREAD) return 0;
+    if (hThread === PSEUDO_HANDLE_THREAD) {
+      const tid = kernel.GetThreadId(hThread);
+      const thread = kernel.currentProcess.getThread(tid);
+      return thread ? thread.resume() : 0;
+    }
     const handleObj = kernel.getObjectFromHandle(hThread);
     if (handleObj && handleObj.type === 'Thread') {
-      // return (handleObj.object as SimulatedThread).resume();
-      return 0;
+      return (handleObj.object as SimulatedThread).resume();
     }
     return 0;
   },
-  GetThreadContext: (_hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
+  GetExitCodeThread: (hThread: Def.HANDLE, lpExitCode: Buffer): Def.BOOL => {
+    const handleObj = kernel.getObjectFromHandle(hThread);
+    if (handleObj && handleObj.type === 'Thread') {
+      const thread = handleObj.object as SimulatedThread;
+      lpExitCode.writeUInt32LE(
+        thread.state === 4 /* TERMINATED */ ? 0 : 259 /* STILL_ACTIVE */,
+        0,
+      );
+      return 1;
+    }
     return 0;
   },
-  SetThreadContext: (_hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
-    return 1;
+  GetThreadContext: (hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
+    const handleObj = kernel.getObjectFromHandle(hThread);
+    if (handleObj && handleObj.type === 'Thread') {
+      (handleObj.object as SimulatedThread).getContext(0);
+      // Context serialization would go here. For now just 1.
+      return 1;
+    }
+    return 0;
   },
+  SetThreadContext: (hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
+    const handleObj = kernel.getObjectFromHandle(hThread);
+    return handleObj && handleObj.type === 'Thread' ? 1 : 0;
+  },
+  CreateThread: (
+    _lpThreadAttributes: Def.SecurityAttributes | Def.LPVOID | null,
+    _dwStackSize: Def.SIZE_T,
+    _lpStartAddress: Def.LPVOID,
+    _lpParameter: Def.LPVOID | null,
+    _dwCreationFlags: Def.ThreadCreationFlags | Def.DWORD,
+    lpThreadId: Buffer | null,
+  ): Def.HANDLE => {
+    return Kernel32Impl.CreateRemoteThread(
+      PSEUDO_HANDLE_PROCESS,
+      _lpThreadAttributes,
+      _dwStackSize,
+      _lpStartAddress,
+      _lpParameter,
+      _dwCreationFlags,
+      lpThreadId,
+    );
+  },
+  CreateRemoteThread: (
+    hProcess: Def.HANDLE,
+    _lpThreadAttributes: Def.SecurityAttributes | Def.LPVOID | null,
+    _dwStackSize: Def.SIZE_T,
+    _lpStartAddress: Def.LPVOID,
+    _lpParameter: Def.LPVOID | null,
+    _dwCreationFlags: Def.ThreadCreationFlags | Def.DWORD,
+    lpThreadId: Buffer | null,
+  ): Def.HANDLE => {
+    let process: SimulatedProcess | undefined;
+    if (hProcess === PSEUDO_HANDLE_PROCESS) {
+      process = kernel.currentProcess;
+    } else {
+      const handleObj = kernel.getObjectFromHandle(hProcess);
+      if (handleObj && handleObj.type === 'Process') {
+        process = handleObj.object as SimulatedProcess;
+      }
+    }
+
+    if (!process) return 0n as unknown as Def.HANDLE;
+
+    const thread = process.createThread();
+    if (lpThreadId) {
+      lpThreadId.writeUInt32LE(thread.id, 0);
+    }
+
+    return kernel.currentProcess.handles.createHandle(
+      thread,
+      'Thread',
+      0x1fffff /* ALL_ACCESS */,
+    );
+  },
+
+  // Synchronization
+  WaitForSingleObject: (
+    hHandle: Def.HANDLE,
+    _dwMilliseconds: Def.DWORD,
+  ): Def.DWORD => {
+    const handleObj = kernel.getObjectFromHandle(hHandle);
+    if (handleObj && handleObj.type === 'Thread') {
+      (handleObj.object as SimulatedThread).state = 4; // TERMINATED
+    }
+    return 0; // WAIT_OBJECT_0
+  },
+
+  // Modules
+  GetModuleHandleW: (lpModuleName: string | null): Def.HMODULE => {
+    const name = lpModuleName || 'kernel32.dll';
+    const mod = kernel.currentProcess.getModule(name);
+    if (mod) return BigInt(mod.baseAddress) as unknown as Def.HMODULE;
+
+    // Create on the fly if not exists (lazy loading simulation)
+    const base = 0x7ff00000 + kernel.currentProcess.modules.size * 0x100000;
+    const newMod = kernel.currentProcess.createModule(name, base, 0x100000);
+    return BigInt(newMod.baseAddress) as unknown as Def.HMODULE;
+  },
+  GetModuleHandleA: (lpModuleName: string | null): Def.HMODULE => {
+    return Kernel32Impl.GetModuleHandleW(lpModuleName);
+  },
+  GetProcAddress: (hModule: Def.HMODULE, lpProcName: string): Def.LPVOID => {
+    // Find module by base address
+    const mod = Array.from(kernel.currentProcess.modules.values()).find(
+      (m) => BigInt(m.baseAddress) === BigInt(hModule as bigint),
+    );
+
+    if (mod) {
+      let addr = mod.getProcAddress(lpProcName);
+      if (!addr) {
+        // Add pseudo-export if it doesn't exist
+        const offset = mod.exports.size * 16;
+        mod.addExport(lpProcName, offset);
+        addr = mod.getProcAddress(lpProcName);
+      }
+      return BigInt(addr!) as unknown as Def.LPVOID;
+    }
+    return 0n as unknown as Def.LPVOID;
+  },
+
   GetLastError: (): Def.DWORD => 0,
 };

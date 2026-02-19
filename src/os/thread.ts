@@ -6,7 +6,7 @@ export enum ThreadState {
   TERMINATED,
 }
 
-export interface ThreadContext {
+export interface SimulatedThreadContext {
   Rip: bigint; // Instruction pointer
   Rax: bigint;
   Rbx: bigint;
@@ -31,7 +31,7 @@ export class SimulatedThread {
   public id: number;
   public state: ThreadState;
   public suspendCount: number = 0;
-  public context: ThreadContext;
+  public context: SimulatedThreadContext;
   public ownerProcessId: number;
 
   constructor(tid: number, ownerPid: number) {
@@ -80,12 +80,12 @@ export class SimulatedThread {
     return this.suspendCount;
   }
 
-  getContext(_flags: number): ThreadContext {
+  getContext(_flags: number): SimulatedThreadContext {
     // Should respect flags (CONTEXT_FULL, etc.), but for mock we return full.
     return { ...this.context };
   }
 
-  setContext(ctx: Partial<ThreadContext>): void {
+  setContext(ctx: Partial<SimulatedThreadContext>): void {
     Object.assign(this.context, ctx);
   }
 }

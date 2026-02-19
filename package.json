@@ -51,9 +51,9 @@
     "build": "tsc",
     "prepublishOnly": "bun run build",
     "test": "bun test",
-    "lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --cache",
-    "lint:fix": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --fix",
-    "format": "prettier --write \"{src,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\"",
-    "format:check": "prettier --check \"{src,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\""
+    "lint": "eslint \"{src,utils,tests}/**/*.{js,ts,jsx,tsx}\" --cache",
+    "lint:fix": "eslint \"{src,utils,tests}/**/*.{js,ts,jsx,tsx}\" --fix",
+    "format": "prettier --write \"{src,utils,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\"",
+    "format:check": "prettier --check \"{src,utils,tests}/**/*.{js,ts,jsx,tsx,css,md,json}\""
   }
 }

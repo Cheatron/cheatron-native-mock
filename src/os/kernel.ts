@@ -20,6 +20,9 @@ export class Kernel {
     // We simulate it as a process so it can have a Handle Table.
     this.currentProcess = new SimulatedProcess(9999, 'CurrentTestRunner.exe');
     this.processes.set(this.currentProcess.id, this.currentProcess);
+
+    // Create initial thread for current process
+    this.currentProcess.createThread();
   }
 
   private createSystemProcess() {
@@ -60,8 +63,45 @@ export class Kernel {
     return handle;
   }
 
+  public OpenThread(
+    dwDesiredAccess: number,
+    _bInheritHandle: boolean,
+    dwThreadId: number,
+  ): Def.HANDLE {
+    // Find thread across all processes
+    for (const proc of this.processes.values()) {
+      const thread = proc.getThread(dwThreadId);
+      if (thread) {
+        return this.currentProcess.handles.createHandle(
+          thread,
+          'Thread',
+          dwDesiredAccess,
+        );
+      }
+    }
+    return 0n as unknown as Def.HANDLE;
+  }
+
   public CloseHandle(hObject: Def.HANDLE): boolean {
+    const h = BigInt.asIntN(64, BigInt(hObject as bigint));
+    if (h === -1n || h === -2n) return true;
     return this.currentProcess.handles.closeHandle(hObject);
+  }
+
+  public GetProcessId(hProcess: Def.HANDLE): number {
+    const h = BigInt.asIntN(64, BigInt(hProcess as bigint));
+    if (h === -1n) return this.currentProcess.id;
+    const obj = this.getObjectFromHandle(hProcess);
+    if (obj && obj.type === 'Process') return obj.object.id;
+    return 0;
+  }
+
+  public GetThreadId(hThread: Def.HANDLE): number {
+    const h = BigInt.asIntN(64, BigInt(hThread as bigint));
+    if (h === -2n) return this.currentProcess.threads.keys().next().value || 0;
+    const obj = this.getObjectFromHandle(hThread);
+    if (obj && obj.type === 'Thread') return obj.object.id;
+    return 0;
   }
 
   // Helper to dereference a handle from the current process context

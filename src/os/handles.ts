@@ -5,7 +5,7 @@ export interface ISimulatedObject {
 }
 
 export interface HandleObject {
-  type: 'Process' | 'Thread' | 'File' | 'Event' | 'Unknown';
+  type: 'Process' | 'Thread' | 'Module' | 'File' | 'Event' | 'Unknown';
   object: ISimulatedObject; // The actual simulation object
   accessMask: number;
 }

@@ -314,7 +314,7 @@ export const Kernel32Impl = {
   GetModuleHandleA: (lpModuleName: string | null): Def.HMODULE => {
     return Kernel32Impl.GetModuleHandleW(lpModuleName);
   },
-  GetProcAddress: (hModule: Def.HMODULE, lpProcName: string): Def.LPVOID => {
+  GetProcAddress: (hModule: Def.HMODULE, lpProcName: string): Def.INT_PTR => {
     // Find module by base address
     const mod = Array.from(kernel.currentProcess.modules.values()).find(
       (m) => BigInt(m.baseAddress) === BigInt(hModule as bigint),
@@ -328,9 +328,9 @@ export const Kernel32Impl = {
         mod.addExport(lpProcName, offset);
         addr = mod.getProcAddress(lpProcName);
       }
-      return BigInt(addr!) as unknown as Def.LPVOID;
+      return BigInt(addr!) as Def.INT_PTR;
     }
-    return 0n as unknown as Def.LPVOID;
+    return 0 as Def.INT_PTR;
   },
 
   GetLastError: (): Def.DWORD => 0,

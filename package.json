@@ -31,7 +31,7 @@
   "dependencies": {
     "@cheatron/log": "^1.0.1",
     "@cheatron/native-mock-koffi": "^1.0.0",
-    "@cheatron/win32-ext": "^1.0.2"
+    "@cheatron/win32-ext": "^1.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

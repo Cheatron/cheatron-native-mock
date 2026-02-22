@@ -85,14 +85,39 @@ export class MemoryManager {
 
   free(
     address: number,
-    _size: number = 0,
-    _freeType: number = 0x8000 /* MEM_RELEASE */,
+    size: number = 0,
+    freeType: number = 0x8000, // MEM_RELEASE
   ): boolean {
     const startAddress = this.alignDown(address);
-    if (this.pages.has(startAddress)) {
-      this.pages.delete(startAddress);
+    const numPages = Math.ceil(size / PAGE_SIZE) || 1;
+
+    if (freeType === 0x4000) {
+      // MEM_DECOMMIT
+      for (let i = 0; i < numPages; i++) {
+        const pageAddr = startAddress + i * PAGE_SIZE;
+        const page = this.pages.get(pageAddr);
+        if (page) {
+          page.state = MemoryState.RESERVE;
+        }
+      }
       return true;
     }
+
+    if (freeType === 0x8000) {
+      // MEM_RELEASE
+      // Note: Win32 rules say size must be 0 for MEM_RELEASE, but we'll be flexible
+      if (size === 0) {
+        // In a real OS, this would release the entire allocation starting at address
+        // For simplicity, we just delete the page at address
+        this.pages.delete(startAddress);
+      } else {
+        for (let i = 0; i < numPages; i++) {
+          this.pages.delete(startAddress + i * PAGE_SIZE);
+        }
+      }
+      return true;
+    }
+
     return false;
   }
 

@@ -175,6 +175,45 @@ export const Kernel32Impl = {
 
     return BigInt(dwLength) as unknown as Def.SIZE_T;
   },
+  VirtualFree: (
+    lpAddress: Def.LPVOID,
+    dwSize: Def.SIZE_T,
+    dwFreeType: Def.MemoryFreeType | Def.DWORD,
+  ): Def.BOOL => {
+    return Kernel32Impl.VirtualFreeEx(
+      PSEUDO_HANDLE_PROCESS,
+      lpAddress,
+      dwSize,
+      dwFreeType,
+    );
+  },
+  VirtualFreeEx: (
+    hProcess: Def.HANDLE,
+    lpAddress: Def.LPVOID,
+    dwSize: Def.SIZE_T,
+    dwFreeType: Def.MemoryFreeType | Def.DWORD,
+  ): Def.BOOL => {
+    let process: SimulatedProcess | undefined;
+
+    if (hProcess === PSEUDO_HANDLE_PROCESS) {
+      process = kernel.currentProcess;
+    } else {
+      const handleObj = kernel.getObjectFromHandle(hProcess);
+      if (handleObj && handleObj.type === 'Process') {
+        process = handleObj.object as SimulatedProcess;
+      }
+    }
+
+    if (!process) return 0;
+
+    return process.memory.free(
+      Number(lpAddress),
+      Number(dwSize),
+      Number(dwFreeType),
+    )
+      ? 1
+      : 0;
+  },
 
   // Thread
   OpenThread: (
@@ -213,9 +252,18 @@ export const Kernel32Impl = {
     return 0;
   },
   GetExitCodeThread: (hThread: Def.HANDLE, lpExitCode: Buffer): Def.BOOL => {
-    const handleObj = kernel.getObjectFromHandle(hThread);
-    if (handleObj && handleObj.type === 'Thread') {
-      const thread = handleObj.object as SimulatedThread;
+    let thread: SimulatedThread | undefined;
+    if (hThread === PSEUDO_HANDLE_THREAD) {
+      const tid = kernel.GetThreadId(hThread);
+      thread = kernel.currentProcess.getThread(tid);
+    } else {
+      const handleObj = kernel.getObjectFromHandle(hThread);
+      if (handleObj && handleObj.type === 'Thread') {
+        thread = handleObj.object as SimulatedThread;
+      }
+    }
+
+    if (thread) {
       lpExitCode.writeUInt32LE(
         thread.state === 4 /* TERMINATED */ ? 0 : 259 /* STILL_ACTIVE */,
         0,
@@ -225,17 +273,35 @@ export const Kernel32Impl = {
     return 0;
   },
   GetThreadContext: (hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
-    const handleObj = kernel.getObjectFromHandle(hThread);
-    if (handleObj && handleObj.type === 'Thread') {
-      (handleObj.object as SimulatedThread).getContext(0);
-      // Context serialization would go here. For now just 1.
+    let thread: SimulatedThread | undefined;
+    if (hThread === PSEUDO_HANDLE_THREAD) {
+      const tid = kernel.GetThreadId(hThread);
+      thread = kernel.currentProcess.getThread(tid);
+    } else {
+      const handleObj = kernel.getObjectFromHandle(hThread);
+      if (handleObj && handleObj.type === 'Thread') {
+        thread = handleObj.object as SimulatedThread;
+      }
+    }
+
+    if (thread) {
+      thread.getContext(0);
       return 1;
     }
     return 0;
   },
   SetThreadContext: (hThread: Def.HANDLE, _lpContext: Buffer): Def.BOOL => {
-    const handleObj = kernel.getObjectFromHandle(hThread);
-    return handleObj && handleObj.type === 'Thread' ? 1 : 0;
+    let thread: SimulatedThread | undefined;
+    if (hThread === PSEUDO_HANDLE_THREAD) {
+      const tid = kernel.GetThreadId(hThread);
+      thread = kernel.currentProcess.getThread(tid);
+    } else {
+      const handleObj = kernel.getObjectFromHandle(hThread);
+      if (handleObj && handleObj.type === 'Thread') {
+        thread = handleObj.object as SimulatedThread;
+      }
+    }
+    return thread ? 1 : 0;
   },
   CreateThread: (
     _lpThreadAttributes: Def.SecurityAttributes | Def.LPVOID | null,

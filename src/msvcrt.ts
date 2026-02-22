@@ -9,6 +9,7 @@ export interface MSVCRT {
   free: (ptr: LPVOID) => void;
   memcpy: (dest: LPVOID, src: LPVOID, count: SIZE_T) => LPVOID;
   memset: (dest: LPVOID, value: number, count: SIZE_T) => LPVOID;
+  memcmp: (buf1: LPVOID | Buffer, buf2: LPVOID | Buffer, count: SIZE_T) => number;
 }
 
 /**
@@ -58,5 +59,29 @@ export const MsvcrtImpl: MSVCRT = {
     }
 
     return dest as LPVOID;
+  },
+
+  memcmp: (
+    buf1: LPVOID | Buffer,
+    buf2: LPVOID | Buffer,
+    count: SIZE_T,
+  ): number => {
+    const size = Number(count);
+    let data1: Buffer;
+    let data2: Buffer;
+
+    if (Buffer.isBuffer(buf1)) {
+      data1 = buf1.subarray(0, size);
+    } else {
+      data1 = kernel.currentProcess.memory.read(Number(buf1), size);
+    }
+
+    if (Buffer.isBuffer(buf2)) {
+      data2 = buf2.subarray(0, size);
+    } else {
+      data2 = kernel.currentProcess.memory.read(Number(buf2), size);
+    }
+
+    return data1.compare(data2);
   },
 };

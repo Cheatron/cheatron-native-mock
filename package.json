@@ -50,10 +50,10 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "bun run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src/**/*.ts --cache",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "format:check": "prettier --check src/**/*.ts"
+    "test": "bun test",
+    "lint": "eslint {src,tests}/**/*.ts --cache",
+    "lint:fix": "eslint {src,tests}/**/*.ts --fix",
+    "format": "prettier --write {src,tests}/**/*.ts",
+    "format:check": "prettier --check {src,tests}/**/*.ts"
   }
 }
